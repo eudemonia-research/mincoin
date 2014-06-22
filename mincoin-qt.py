@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import time
 import wallet
+import base64
 
 
 my_wallet = wallet.Wallet()
@@ -50,7 +51,7 @@ class StateUpdater(QtCore.QThread):
 
     def run(self):
         while True:
-            self.ui.balance.setText(str(my_wallet.balance()))
+            self.ui.balance.setText(str(my_wallet.get_balance()))
             time.sleep(2)
 
 

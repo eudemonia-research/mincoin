@@ -1,9 +1,7 @@
 import config
-import binascii
+import base64
 import ecdsa
 import random
-import requests
-import json
 from rpc import RPC
 
 
@@ -11,58 +9,76 @@ my_rpc = RPC()
 system_random = random.SystemRandom()
 
 
-def key_to_string(key):
-    return binascii.hexlify(key.to_string()).decode('utf-8')
+def key_to_base64(key):
+    return base64.b64encode(key.to_string()).decode('utf-8')
+
+
+def base64_to_privkey(string):
+    return ecdsa.SigningKey.from_string(base64.b64decode(string), curve=ecdsa.SECP256k1)
+
+
+def base64_to_pubkey(string):
+    return ecdsa.VerifyingKey.from_string(base64.b64decode(string), curve=ecdsa.SECP256k1)
 
 
 class Wallet:
     def __init__(self):
-        self.public_key = {}
-
-        # labels, indexed on private key
-        # TODO: watch-only public key support
+        # indexed on base64 version of pubkey
+        self.privkey = {}
         self.labels = {}
+
+        # keys.txt format: privkey:pubkey:label
+        # save both to avoid recalculation. space is cheap!
+
         with config.open('keys.txt', 'rb') as f:
             for line in f.readlines():
-                key, label = line.split(b':', 1)
-                key = binascii.unhexlify(key)
+                privkey, pubkey, label = line.split(b':', 2)
+                if privkey:
+                    privkey = base64_to_privkey(privkey)
+                pubkey = base64_to_pubkey(pubkey)
                 label = label.strip()
-                self.labels[key] = label.decode('utf-8')
-                privkey = ecdsa.SigningKey.from_string(key, curve=ecdsa.SECP256k1)
-                self.public_key[key] = key_to_string(privkey.get_verifying_key())
+                self.labels[key_to_base64(pubkey)] = label.decode('utf-8')
+                self.privkey[key_to_base64(pubkey)] = privkey
 
     def generate_address(self, label: str):
         label = label.strip()
+        assert '\n' not in label
+
         # TODO: introduce extra entropy
         secret = system_random.randrange(ecdsa.SECP256k1.order)
-        private_key = ecdsa.SigningKey.from_secret_exponent(secret, curve=ecdsa.SECP256k1)
+
+        privkey = ecdsa.SigningKey.from_secret_exponent(secret, curve=ecdsa.SECP256k1)
+        pubkey = privkey.get_verifying_key()
+
+        # add it to keys.txt (see format above in __init__)
         with config.open('keys.txt', 'ab') as f:
-            f.write(key_to_string(private_key).encode('utf-8') + b':' + label.encode('utf-8') + b'\n')
-        privkey_hex = key_to_string(private_key)
-        self.labels[privkey_hex] = label
-        self.public_key[privkey_hex] = key_to_string(private_key.get_verifying_key())
-        return self.public_key[privkey_hex]
+            output = key_to_base64(privkey) + ':'
+            output += key_to_base64(pubkey) + ':'
+            output += label + '\n'
+            f.write(output.encode('utf-8'))
+
+        self.labels[key_to_base64(pubkey)] = label
+        self.privkey[key_to_base64(pubkey)] = privkey
+
+        return key_to_base64(pubkey).decode('utf-8')
 
     def transactions(self):
         ret = []
-        for privkey, pubkey in self.public_key.items():
+        for pubkey, label in self.labels.items():
             ret += my_rpc.get_transactions(pubkey)
         return ret
 
-    def balance(self):
+    def get_balance(self):
         ret = 0
-        for privkey, pubkey in self.public_key.items():
+        for pubkey, label in self.labels.items():
             ret += my_rpc.get_balance(pubkey)
         return ret
 
     def send(self, to, amount):
-        # first check we can do it
-        ret = 0
-        for privkey, pubkey in self.public_key.items():
-            ret += my_rpc.get_balance(pubkey)
-        if ret < amount:
-            raise Exception("not enough funds")
-        for privkey, pubkey in self.public_key.items():
+        if self.get_balance() < amount:
+            raise Exception("Not enough funds!")
+
+        for pubkey, label in self.labels.items():
             balance = my_rpc.get_balance(pubkey)
             if balance > 0:
                 amount_from_this_addr = min(amount, balance)

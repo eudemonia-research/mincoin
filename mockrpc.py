@@ -5,12 +5,15 @@ from collections import defaultdict
 from jsonrpc import JSONRPCResponseManager, dispatcher
 
 balance = defaultdict(int)
-balance['cb3003b97069991dea482cfd64d3b76d2ecc58ff3545da651bef04040de28edb39f901e24a43a16ed1dd7991322f2c108710dae65f2ce77a679f6f4380f7ac8d'] = 1000
+
+# private key for this pubkey is: lF30UsdZuaEsnfO3mmB22yjqsSC4+yLWiozYcTMj48g=
+
+balance['BKJnfE/WWoRpmXwhcyY7Z5IjBVYaFc2A1to27hNpTgqi6jJ0FOURnSPm6YyKYdOdBumM4FgIZUUeU5kUUrVDCQ=='] = 1000
+
 # contains other_address, delta (to the account that it is indexed by)
 transactions = defaultdict(list)
 
 def get_balance(pubkey):
-    print("get balance called for ",pubkey)
     return balance[pubkey]
 
 def get_transactions(pubkey):
