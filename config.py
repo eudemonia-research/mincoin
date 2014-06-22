@@ -1,6 +1,6 @@
 import os
 
-basedir = os.path.join(os.path.expanduser('~'), '.marketcoin')
+basedir = os.path.join(os.path.expanduser('~'), '.mincoin')
 
 if not os.path.exists(basedir):
     os.mkdir(basedir)
