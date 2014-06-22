@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mincoin.ui'
 #
-# Created: Sun Jun 22 13:27:17 2014
+# Created: Sun Jun 22 13:42:34 2014
 #      by: PyQt5 UI code generator 5.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -172,7 +172,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
