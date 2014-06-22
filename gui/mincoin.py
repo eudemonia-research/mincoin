@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mincoin.ui'
 #
-# Created: Sun Jun 22 13:15:33 2014
+# Created: Sun Jun 22 13:27:17 2014
 #      by: PyQt5 UI code generator 5.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -170,11 +170,9 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab_6, "")
         self.verticalLayout.addWidget(self.tabWidget)
         MainWindow.setCentralWidget(self.centralwidget)
-        self.actionAbout_Marketcoin = QtWidgets.QAction(MainWindow)
-        self.actionAbout_Marketcoin.setObjectName("actionAbout_Marketcoin")
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -203,5 +201,4 @@ class Ui_MainWindow(object):
         self.label_15.setText(_translate("MainWindow", "mincoin-qt 0.0.1"))
         self.label_23.setText(_translate("MainWindow", "Debug"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), _translate("MainWindow", "About"))
-        self.actionAbout_Marketcoin.setText(_translate("MainWindow", "About Marketcoin"))
 

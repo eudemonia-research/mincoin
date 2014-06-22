@@ -18,7 +18,7 @@ def get_transactions(pubkey):
 
 def broadcast_transaction(frm, to, amount, signature):
     print(frm,to,amount,signature)
-    # In marketcoin this might look something like
+    # In mincoin this might look something like
     # Transaction.make(sender=frm, recipient=to, amount=amount, signature=signature)
     # if it's invalid, throw an error. Encodium objects should be valid at all times.
     balance[frm] -= amount

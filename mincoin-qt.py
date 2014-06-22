@@ -1,4 +1,4 @@
-from gui.marketcoin import Ui_MainWindow
+from gui.mincoin import Ui_MainWindow
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import time
