@@ -7,7 +7,7 @@ class RPC:
     def __getattr__(self, name):
         def func(*args):
             global call_id
-            url = "http://localhost:2736/jsonrpc"
+            url = "http://localhost:2737/jsonrpc"
             headers = {'content-type': 'application/json'}
             payload = {
                 "method": name,
