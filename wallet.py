@@ -60,7 +60,7 @@ class Wallet:
         self.labels[key_to_base64(pubkey)] = label
         self.privkey[key_to_base64(pubkey)] = privkey
 
-        return key_to_base64(pubkey).decode('utf-8')
+        return key_to_base64(pubkey)
 
     def transactions(self):
         ret = []
