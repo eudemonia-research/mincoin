@@ -4,9 +4,13 @@ import sys
 import time
 import wallet
 import base64
+import rpc
 
 
 my_wallet = wallet.Wallet()
+
+
+my_rpc = rpc.RPC()
 
 
 class TransactionTable(QtCore.QAbstractTableModel):
@@ -52,6 +56,8 @@ class StateUpdater(QtCore.QThread):
     def run(self):
         while True:
             self.ui.balance.setText(str(my_wallet.get_balance()))
+            height = my_rpc.get_info()['top_block_height']
+            self.ui.blockheight.setText(str(height))
             time.sleep(2)
 
 

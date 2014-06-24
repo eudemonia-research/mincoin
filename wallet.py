@@ -23,7 +23,7 @@ def base64_to_pubkey(string):
 
 class Wallet:
     def __init__(self):
-        # indexed on base64 version of pubkey
+        # indexed on the x value of pubkey, as an integer.
         self.privkey = {}
         self.labels = {}
 
@@ -36,9 +36,10 @@ class Wallet:
                 if privkey:
                     privkey = base64_to_privkey(privkey)
                 pubkey = base64_to_pubkey(pubkey)
+                x = pubkey.pubkey.point.x()
                 label = label.strip()
-                self.labels[key_to_base64(pubkey)] = label.decode('utf-8')
-                self.privkey[key_to_base64(pubkey)] = privkey
+                self.labels[x] = label.decode('utf-8')
+                self.privkey[x] = privkey
 
     def generate_address(self, label: str):
         label = label.strip()
@@ -57,30 +58,31 @@ class Wallet:
             output += label + '\n'
             f.write(output.encode('utf-8'))
 
-        self.labels[key_to_base64(pubkey)] = label
-        self.privkey[key_to_base64(pubkey)] = privkey
+        x = pubkey.pubkey.point.x()
+        self.labels[x] = label
+        self.privkey[x] = privkey
 
         return key_to_base64(pubkey)
 
     def transactions(self):
         ret = []
-        for pubkey, label in self.labels.items():
-            ret += my_rpc.get_transactions(pubkey)
+        for x, label in self.labels.items():
+            ret += my_rpc.get_transactions(x)
         return ret
 
     def get_balance(self):
         ret = 0
-        for pubkey, label in self.labels.items():
-            ret += my_rpc.get_balance(pubkey)
+        for x, label in self.labels.items():
+            ret += my_rpc.get_balance(x)['balance']
         return ret
 
     def send(self, to, amount):
         if self.get_balance() < amount:
             raise Exception("Not enough funds!")
 
-        for pubkey, label in self.labels.items():
-            balance = my_rpc.get_balance(pubkey)
+        for x, label in self.labels.items():
+            balance = my_rpc.get_balance(x)
             if balance > 0:
                 amount_from_this_addr = min(amount, balance)
                 amount -= amount_from_this_addr
-                my_rpc.broadcast_transaction(pubkey, to, amount_from_this_addr, 'ignored for now')
+                my_rpc.broadcast_transaction(x, to, amount_from_this_addr, 'ignored for now')

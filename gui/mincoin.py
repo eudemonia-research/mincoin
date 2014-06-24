@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mincoin.ui'
 #
-# Created: Sun Jun 22 13:42:34 2014
+# Created: Tue Jun 24 00:07:28 2014
 #      by: PyQt5 UI code generator 5.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,10 +49,10 @@ class Ui_MainWindow(object):
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.horizontalLayout.addWidget(self.label_2)
-        self.label_blockheight = QtWidgets.QLabel(self.centralwidget)
-        self.label_blockheight.setText("")
-        self.label_blockheight.setObjectName("label_blockheight")
-        self.horizontalLayout.addWidget(self.label_blockheight)
+        self.blockheight = QtWidgets.QLabel(self.centralwidget)
+        self.blockheight.setText("")
+        self.blockheight.setObjectName("blockheight")
+        self.horizontalLayout.addWidget(self.blockheight)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName("tabWidget")
