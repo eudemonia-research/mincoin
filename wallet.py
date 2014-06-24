@@ -27,6 +27,10 @@ class Wallet:
         self.privkey = {}
         self.labels = {}
 
+        # hardcode the block reward.
+        self.privkey[55066263022277343669578718895168534326250603453777594175500187360389116729240] = 1
+        self.labels[55066263022277343669578718895168534326250603453777594175500187360389116729240] = 'block reward'
+
         # keys.txt format: privkey:pubkey:label
         # save both to avoid recalculation. space is cheap!
 
