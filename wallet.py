@@ -2,6 +2,8 @@ import config
 import base64
 import ecdsa
 import random
+import binascii
+from cryptonet.standard import SuperTx, Tx
 from rpc import RPC
 
 
@@ -80,13 +82,22 @@ class Wallet:
             ret += my_rpc.get_balance(x)['balance']
         return ret
 
-    def send(self, to, amount):
+    def send(self, to: int, amount: int):
+        to = base64_to_pubkey(to).pubkey.point.x()
         if self.get_balance() < amount:
             raise Exception("Not enough funds!")
 
         for x, label in self.labels.items():
-            balance = my_rpc.get_balance(x)
+            balance = my_rpc.get_balance(x)['balance']
             if balance > 0:
                 amount_from_this_addr = min(amount, balance)
                 amount -= amount_from_this_addr
-                my_rpc.broadcast_transaction(x, to, amount_from_this_addr, 'ignored for now')
+
+                stx = SuperTx.make(txs=[Tx.make(dapp=b'',
+                                                value=amount_from_this_addr,
+                                                fee=1,
+                                                donation=1,
+                                                data=[x.to_bytes(32, 'big')])])
+                stx.sign(self.privkey[x])
+                tx = binascii.hexlify(stx.serialize()).decode()
+                my_rpc.push_tx(tx)
