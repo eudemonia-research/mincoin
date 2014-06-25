@@ -3,7 +3,7 @@ import base64
 import ecdsa
 import random
 import binascii
-from cryptonet.standard import SuperTx, Tx
+from cryptonet.standard import SuperTx, Tx, Signature
 from rpc import RPC
 
 
@@ -97,7 +97,7 @@ class Wallet:
                                                 value=amount_from_this_addr,
                                                 fee=1,
                                                 donation=1,
-                                                data=[x.to_bytes(32, 'big')])], signature=Signature.make(r=0, s=0, pubkey_x=0, pubkey_y=0))
+                                                data=[x.to_bytes(32, 'big')])], signature=Signature.make(r=0, s=0, v=0, pubkey_x=0, pubkey_y=0))
                 stx.sign(self.privkey[x])
                 tx = binascii.hexlify(stx.serialize()).decode()
                 my_rpc.push_tx(tx)
