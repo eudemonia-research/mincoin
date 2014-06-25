@@ -42,7 +42,6 @@ def setup_buttons(ui):
     ui.generate_payment_request.clicked.connect(
         lambda: ui.address.setText(my_wallet.generate_address(ui.label.text().strip())))
     transaction_table = TransactionTable()
-    ui.transactions.setModel(transaction_table)
     ui.transactions_2.setModel(transaction_table)
     ui.send.clicked.connect(lambda: do_send(ui))
 
