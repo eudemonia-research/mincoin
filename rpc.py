@@ -18,5 +18,7 @@ class RPC:
             response = requests.post(url, data=json.dumps(payload), headers=headers).json()
             assert response['id'] == call_id
             call_id += 1
+            if 'error' in response:
+                print(response['error'])
             return response['result']
         return func

@@ -3,8 +3,9 @@ import base64
 import ecdsa
 import random
 import binascii
-from cryptonet.standard import SuperTx, Tx, Signature
+from cryptonet.standard import SuperTx, Tx, Signature, Point
 from rpc import RPC
+import json
 
 
 my_rpc = RPC()
@@ -92,12 +93,12 @@ class Wallet:
             if balance > 0:
                 amount_from_this_addr = min(amount, balance)
                 amount -= amount_from_this_addr
-
-                stx = SuperTx.make(txs=[Tx.make(dapp=b'',
-                                                value=amount_from_this_addr,
-                                                fee=1,
-                                                donation=1,
-                                                data=[x.to_bytes(32, 'big')])], signature=Signature.make(r=0, s=0, v=0, pubkey_x=0, pubkey_y=0))
-                stx.sign(self.privkey[x])
-                tx = binascii.hexlify(stx.serialize()).decode()
-                my_rpc.push_tx(tx)
+                sender = Point._from_ecdsa_point(self.privkey[x] * ecdsa.SECP256k1.generator)
+                stx = SuperTx(txs=[Tx(dapp=b'',
+                                      value=amount_from_this_addr,
+                                      fee=1,
+                                      donation=1,
+                                      data=[x.to_bytes(32, 'big')])],
+                              sender=sender)
+                sstx = stx.sign(self.privkey[x])
+                my_rpc.push_tx(json.loads(sstx.to_json()))
